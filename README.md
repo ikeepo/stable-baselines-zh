@@ -34,7 +34,7 @@
 
 - ## 用户向导
 
-  - ### 安装
+  - ### [安装](https://github.com/DBWangML/stable-baselines-zh/blob/master/%E5%AE%89%E8%A3%85/%E5%AE%89%E8%A3%85.md)
 
     - 预备知识
     - 稳定版本
