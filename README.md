@@ -7,7 +7,9 @@
   > 官方文档中文版汇总：Github：<https://github.com/DBWangML/stable-baselines-zh>    
 - ## 注释
   > @@@后的内容是自己加的注释
----------------以下为翻译正文--------------
+
+----------------------------以下为翻译正文---------------------------------
+
   [Stable Baselines](https://github.com/hill-a/stable-baselines)是一组基于OpenAI [Baselines](https://github.com/openai/baselines)的改进版强化学习(RL: Reinforcement Learning)实现。
 
   Github网址： https://github.com/hill-a/stable-baselines   
