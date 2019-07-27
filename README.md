@@ -41,7 +41,7 @@
     - 最新版本
     - 用Docker图片
 
-  - ### 开始
+  - ### [开始](https://github.com/DBWangML/stable-baselines-zh/blob/master/%E7%94%A8%E6%88%B7%E5%90%91%E5%AF%BC/%E5%BC%80%E5%A7%8B.md)
 
   - ### 强化学习资源
 
