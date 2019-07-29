@@ -45,7 +45,7 @@
 
   - ### [强化学习资源](https://github.com/DBWangML/stable-baselines-zh/blob/master/%E7%94%A8%E6%88%B7%E5%90%91%E5%AF%BC/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%BA%90.md)
 
-  - ### RL算法
+  - ### [RL算法](https://github.com/DBWangML/stable-baselines-zh/blob/master/%E7%94%A8%E6%88%B7%E5%90%91%E5%AF%BC/RL%E7%AE%97%E6%B3%95.md)
 
   - ### 案例
 
