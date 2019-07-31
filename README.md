@@ -47,7 +47,7 @@
 
   - ### [RL算法](https://github.com/DBWangML/stable-baselines-zh/blob/master/%E7%94%A8%E6%88%B7%E5%90%91%E5%AF%BC/RL%E7%AE%97%E6%B3%95.md)
 
-  - ### 案例
+  - ### [案例](https://github.com/DBWangML/stable-baselines-zh/blob/master/%E7%94%A8%E6%88%B7%E5%90%91%E5%AF%BC/%E7%A4%BA%E4%BE%8B.md)
 
     - 先用Colab Notebook在线试试吧
     - 基础用法：训练、保存、载入
