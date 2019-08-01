@@ -63,7 +63,7 @@
     - 记录视频
     - 好处：制作训练好智体的GIF图片
 
-  - ### 矢量化环境
+  - ### [矢量化环境](https://github.com/DBWangML/stable-baselines-zh/blob/master/%E7%94%A8%E6%88%B7%E5%90%91%E5%AF%BC/%E7%9F%A2%E9%87%8F%E5%8C%96%E7%8E%AF%E5%A2%83.md)
 
     - [DummyVecEnv](https://stable-baselines.readthedocs.io/en/master/guide/vec_envs.html#dummyvecenv) 
     - [SubprocVecEnv](https://stable-baselines.readthedocs.io/en/master/guide/vec_envs.html#subprocvecenv) 
