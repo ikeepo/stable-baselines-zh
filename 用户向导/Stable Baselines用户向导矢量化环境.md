@@ -1,0 +1,515 @@
+- # Stable Baselines/用户向导/矢量化环境
+
+  > Stable Baselines官方文档中文版 [Github](https://github.com/DBWangML/stable-baselines-zh) [CSDN](https://blog.csdn.net/The_Time_Runner/article/details/97392656)
+  > 尝试翻译官方文档，水平有限，如有错误万望指正
+
+  矢量化环境是一种将多重独立环境堆叠成单一环境的方法。相比于每步在单一环境上训练RL智体，矢量化环境允许我们每步在n个环境上训练RL智体。因为这个原因，传递给环境的actions是一个n维环境，观察、奖励和事件约束信号也是一样的。类似Dict或Tuple这种非数组观测空间的case中，不同子空间有不同形状，子观测值为n维向量。
+
+  | Name          | `Box` | `Discrete` | `Dict` | `Tuple` | Multi Processing |
+  | ------------- | ----- | ---------- | ------ | ------- | ---------------- |
+  | DummyVecEnv   | ✔️     | ✔️          | ✔️      | ✔️       | ❌️                |
+  | SubprocVecEnv | ✔️     | ✔️          | ✔️      | ✔️       | ✔️                |
+
+  > 当使用包装器进行帧堆叠或标准化时就需要矢量化环境
+
+  > 当使用矢量化环境，环境会在每集结束后自动重置。因此，当done[i]为真时第i次环境返回的观测值就成为下一环节的初始观测值，而非刚结束这部分的最后观测值。你可访问“real”终止章节的最终观测值-那就是，伴随潜在环境提供的done事件，用`vecenv`返回的`info`字典中`terminal_observation`键
+  >
+  > @@@惨不忍睹，我也没太看懂，后续懂了再来修改
+
+  > 警告：
+  >
+  > 当使用`SubprocVecEnv`，用户如果用`forkserver`或`spawn`启动方法（`Windows`中默认），需要将代码封装在`if __name__=="__main__":`。在`Linux`中，默认启动方法时`fork`，并不是线程安全的，可以创建死锁。
+
+- ## VecEnv
+
+  ```python
+  class stable_baselines.common.vec_env.VecEnv(num_envs, observation_space, action_space)
+  ```
+
+  抽象异步，矢量化环境。
+
+  **参数：**
+
+  - num_envs - (int)环境的数量
+  - observation_space - (Gym空间)观测空间
+  - action_space - (Gym空间)行动空间
+
+  **函数：**
+
+  - ```python
+    close()
+    ```
+
+    清理环境资源
+
+  - ```python
+    env_method(method_name, *method_args, indices=None, **method_kwargs)
+    ```
+
+    调用矢量化环境的实例方法。
+
+    | 参数         | 数据类型  | 意义                       |
+    | ------------ | --------- | -------------------------- |
+    | method_name  | 字符串    | 调用的环境方法             |
+    | indices      | list，int | 方法被调用的环境的索引     |
+    | method_args  | tuple     | 调用中提供的任何位置参数   |
+    | metho_kwargs | dict      | 调用中提供的任何关键字参数 |
+
+    返回：环境的方法调用返回项的列表
+
+  - ```python
+    get_attr(attr_name, indices=None) 
+    ```
+
+    从矢量化环境返回属性
+
+    | 参数      | 数据类型 | 意义                         |
+    | --------- | -------- | ---------------------------- |
+    | attr_name | str      | 值被返回的那个属性的名字     |
+    | indices   | list,int | 从中获取属性的哪些环境的索引 |
+
+    返回：所有环境中"attr_name"值的列表
+
+  - ```python
+    get_images() 
+    ```
+
+    从每个环境中返回RGB图像
+
+  - ```python
+    getattr_depth_check(name, already_found)
+    ```
+
+    检查属性引用是否隐藏在对`__getattr__`的递归调用中。
+
+    | 参数          | 数据类型 | 意义                       |
+    | ------------- | -------- | -------------------------- |
+    | name          | str      | 需检查那个属性的名字       |
+    | already_found | bool     | 是否已在包装器中找到此属性 |
+
+    返回：(str or None)属性被隐藏的模型名字（如果有被隐藏的话）
+
+  - ```python
+    render(*args, **kwargs)
+    ```
+
+    呈现Gym环境
+
+    | 参数 | 数据类型 | 意义     |
+    | ---- | -------- | -------- |
+    | mode | str      | 呈现类型 |
+
+  - ```python
+    reset()
+    ```
+
+    重置所有环境，返回一个观测数组或观测数组构成的元组。
+
+    如果`step_async`还在工作，该工作会被取消，在`step_async()`被调用之前不再调用`step_wait()` 
+
+    返回：（[int] or [float]）观测
+
+  - ```python
+    set_attr(attr_name, value, indices=None)
+    ```
+
+    设置矢量化环境内的属性
+
+    | 参数      | 数据类型 | 意义                |
+    | --------- | -------- | ------------------- |
+    | attr_name | str      | 被赋新值的属性名称  |
+    | value     | obj      | 赋给*attr_name*的值 |
+    | indices   | list,int | 被赋值环境的索引    |
+
+    返回：(NoneType)
+
+  - ```python
+    step(actions)
+    ```
+
+    使用给定行动逐步处理环境
+
+    | 参数    | 数据类型         | 意义 |
+    | ------- | ---------------- | ---- |
+    | actions | [int] or [float] | 行动 |
+
+    返回：([int] or [float], [float], [bool], dict)观测、奖励、完成、信息
+
+  - ```python
+    step_async(actions)
+    ```
+
+    告诉环境用给定动作开始逐步处理。调用`step_wait()`来获取此步的结果
+
+    如果一个`step_async`运行已被挂起，你就不应调用`step_async()` 
+
+  - ```python
+    step_wait()
+    ```
+
+    等待step_async()执行的步
+
+    返回：([int] or [float], [float], [bool], dict)观测、奖励、完成、信息
+
+- ## DummyVecEnv
+
+  ```python
+  class stable_baselines.common.vec_env.DummyVecEnv(env_fns)
+  ```
+
+  为多环境创建矢量化封装器，在当前Python进程中，逐个调用序列中的环境。这对于像cartpole-v1这种计算简单的环境很有用，因为多进程或多线程的总开销超过了环境计算时间。这也可用于需要矢量化环境，但只用一个环境来训练的RL方法
+
+  **参数：**
+
+  - env_fns- ([Gym Environment])需矢量化的环境列表
+
+  **函数：**
+
+  - ```python
+    close()
+    ```
+
+    清理环境资源
+
+  - ```python
+    env_method(method_name, *method_args, indices=None, **method_kwargs)
+    ```
+
+    调用矢量化环境的实例方法。
+
+  - ```python
+    get_attr(attr_name, indices=None) 
+    ```
+
+    从矢量化环境返回属性（参见基类）
+
+  - ```python
+    get_images() 
+    ```
+
+    从每个环境中返回RGB图像
+
+  - ```python
+    render(*args, **kwargs)
+    ```
+
+    呈现Gym环境
+
+    | 参数 | 数据类型 | 意义     |
+    | ---- | -------- | -------- |
+    | mode | str      | 呈现类型 |
+
+  - ```python
+    reset()
+    ```
+
+    重置所有环境，返回一个观测数组或观测数组构成的元组。
+
+    如果`step_async`还在工作，该工作会被取消，在`step_async()`被调用之前不再调用`step_wait()` 
+
+    返回：（[int] or [float]）观测
+
+  - ```python
+    set_attr(attr_name, value, indices=None)
+    ```
+
+    设置矢量化环境内的属性（参见基类）
+
+  - ```python
+    step_async(actions)
+    ```
+
+    告诉环境用给定动作开始逐步处理。调用`step_wait()`来获取此步的结果
+
+    如果一个`step_async`运行已被挂起，你就不应调用`step_async()` 
+
+  - ```python
+    step_wait()
+    ```
+
+    等待step_async()执行的步
+
+    返回：([int] or [float], [float], [bool], dict)观测、奖励、完成、信息
+
+- ## SubprocVecEnv
+
+  ```python
+  class stable_baselines.common.vec_env.SubprocVecEnv(env_fns, start_method=None)
+  ```
+
+  为多种环境创建一个多进程矢量化封装器，为每个进程分配一个环境。当环境计算复杂时允许显著加速。
+
+  基于性能考虑，如果你的环境没有IO限制，环境数量不应超过你CPU核数。
+
+  > 警告：
+  >
+  > 只有"forkserver"和"spawn"启动方法是线程安全的。当父类中使用TensorFlow绘画或其他非线程安全库时，这是非常重要的（参见issue#217）。然而，相比于"fork"他们的启动成本较低，并对全局变量有限制。用这些方法，用户必须将代码封装到`if __name__=="__main__":`更多信息，参见多进程文档
+
+  **参数：**
+
+  - env_fns- ([Gym Environment])需矢量化的环境列表
+  - start_method  - (str)启动子进程的方法。必须是 `multiprocessing.get_all_start_methods()`返回方法中的一种。在可用平台上默认'`fork`'，其他用'`spawn`'。
+
+  **函数：**
+
+  - ```python
+    close()
+    ```
+
+    清理环境资源
+
+  - ```python
+    env_method(method_name, *method_args, indices=None, **method_kwargs)
+    ```
+
+    调用矢量化环境的实例方法。
+
+  - ```python
+    get_attr(attr_name, indices=None) 
+    ```
+
+    从矢量化环境返回属性（参见基类）
+
+  - ```python
+    get_images() 
+    ```
+
+    从每个环境中返回RGB图像
+
+  - ```python
+    render(*args, **kwargs)
+    ```
+
+    呈现Gym环境
+
+    | 参数 | 数据类型 | 意义     |
+    | ---- | -------- | -------- |
+    | mode | str      | 呈现类型 |
+
+  - ```python
+    reset()
+    ```
+
+    重置所有环境，返回一个观测数组或观测数组构成的元组。
+
+    如果`step_async`还在工作，该工作会被取消，在`step_async()`被调用之前不再调用`step_wait()` 
+
+    返回：（[int] or [float]）观测
+
+  - ```python
+    set_attr(attr_name, value, indices=None)
+    ```
+
+    设置矢量化环境内的属性（参见基类）
+
+  - ```python
+    step_async(actions)
+    ```
+
+    告诉环境用给定动作开始逐步处理。调用`step_wait()`来获取此步的结果
+
+    如果一个`step_async`运行已被挂起，你就不应调用`step_async()` 
+
+  - ```python
+    step_wait()
+    ```
+
+    等待step_async()执行的步
+
+    返回：([int] or [float], [float], [bool], dict)观测、奖励、完成、信息
+
+- ## Wrappers
+
+  - ### VecFrameStack
+
+    ```python
+    class stable_baselines.common.vec_env.VecFrameStack(venv, n_stack)
+    ```
+
+    用于向量化环境的帧堆积包装器
+
+    参数：
+
+    - venv - (VecEnv)需要被包装的矢量化环境
+
+    - n_stacks - (int)用于堆叠的frames数量
+
+    - ```python
+      close()
+      ```
+
+      清理环境资源
+
+    - ```python
+      reset()
+      ```
+
+      重置所有环境
+
+    - ```python
+      step_wait()
+      ```
+
+      等待step_async()执行的步
+
+      返回：([int] or [float], [float], [bool], dict)观测、奖励、完成、信息
+
+  - ### VecNormalize
+
+    ```python
+    class stable_baselines.common.vec_env.VecNormalize(venv, training=True, norm_obs=True, norm_reward=True, clip_obs=10.0, clip_reward=10.0, gamma=0.99, epsilon=1e-08)
+    ```
+
+    一种矢量化环境的移动平均、标准化封装器。支持保存/载入移动平均。
+
+    参数：
+
+    - venv - (VecEnv)需要被包装的矢量化环境
+
+    - training - (bool)是否更新移动平均
+
+    - norm_obs - (bool)是否标准化观测（默认True）
+
+    - norm_reward - (bool)是否标准化奖励（默认True）
+
+    - clip_obs - (float)观测的最大绝对值
+
+    - clip_reward - (float)折扣奖励的最大绝对值
+
+    - gamma - (float)折扣因子
+
+    - epsilon - (float)避免被0除
+
+    - ```python
+      get_original_obs()
+      ```
+
+      返回非标准化观测
+
+      返回：(numpy float)
+
+    - ```python
+      load_running_average(path)
+      ```
+
+      | 参数 | 数据类型 | 意义             |
+      | ---- | -------- | ---------------- |
+      | path | str      | 载入文件夹的路径 |
+
+    - ```python
+      reset()
+      ```
+
+      重置所有环境
+
+    - ```python
+      save_running_average(path)
+      ```
+
+      | 参数 | 数据类型 | 意义             |
+      | ---- | -------- | ---------------- |
+      | path | str      | 载入文件夹的路径 |
+
+    - ```python
+      step_wait()
+      ```
+
+      将动作序列应用到环境动作序列-->(观测、奖励、新信息)
+
+      "new"是布尔因子，表明每个元素是否是新的。
+
+  - ### VecVideoRecorder
+
+    ```python
+    class stable_baselines.common.vec_env.VecVideoRecorder(venv, video_folder, record_video_trigger, video_length=200, name_prefix='rl-video')
+    ```
+
+    封装一个VecEnv或VecEncWrapper对象成mp4视频，以记录呈现的图像。它要求机器安装ffmpeg或avconv。
+
+    参数：
+
+    - venv - (VecEnv or VecEnvWrapper)
+
+    - video_folder - (str)视频保存地址
+
+    - record_video_trigger - (func)定义何时开始记录的函数。该函数接受当前的步骤数，并返回是否开始记录
+
+    - video_length - (int)视频长度
+
+    - name_prefix - (str)视频名称前缀
+
+    - ```python
+      close()
+      ```
+
+      清理环境资源
+
+    - ```python
+      load_running_average(path)
+      ```
+
+      | 参数 | 数据类型 | 意义             |
+      | ---- | -------- | ---------------- |
+      | path | str      | 载入文件夹的路径 |
+
+    - ```python
+      reset()
+      ```
+
+      重置所有环境，返回一个观测数组或观测数组构成的元组。
+
+      如果`step_async`还在工作，该工作会被取消，在`step_async()`被调用之前不再调用`step_wait()` 
+
+      返回：（[int] or [float]）观测
+
+    - ```python
+      step_wait()
+      ```
+
+      等待step_async()执行的步
+
+      返回：([int] or [float], [float], [bool], dict)观测、奖励、完成、信息
+
+  - ### VecCheckNan
+
+    ```python
+    class stable_baselines.common.vec_env.VecCheckNan(venv, raise_exception=False, warn_once=True, check_inf=True)
+    ```
+
+    默认情况下，矢量化环境的NaN和inf检查包装器会提出警告，让你知道NaN和inf源自何处。
+
+    参数：
+
+    - venv - (VecEnv)需封装的矢量化环境
+
+    - raise_exception - (bool)是否提出ValueError，而不是UserWarning
+
+    - warn_once - (bool)是否只是警告一次
+
+    - check_inf - (bool)是否也检查+inf或-inf
+
+    - ```python
+      reset()
+      ```
+
+      重置所有环境，返回一个观测数组或观测数组构成的元组。
+
+      如果`step_async`还在工作，该工作会被取消，在`step_async()`被调用之前不再调用`step_wait()` 
+
+      返回：（[int] or [float]）观测
+
+    - ```python
+      step_async(actions)
+      ```
+
+      告诉环境用给定动作开始逐步处理。调用`step_wait()`来获取此步的结果
+
+      如果一个`step_async`运行已被挂起，你就不应调用`step_async()` 
+
+    - ```python
+      step_wait()
+      ```
+
+      等待step_async()执行的步
+
+      返回：([int] or [float], [float], [bool], dict)观测、奖励、完成、信息
