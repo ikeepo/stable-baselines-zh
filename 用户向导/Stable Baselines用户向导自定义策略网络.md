@@ -1,0 +1,224 @@
+- # Stable Baselines/用户向导/自定义策略网络
+
+  > Stable Baselines官方文档中文版 [Github](https://github.com/DBWangML/stable-baselines-zh) [CSDN](https://blog.csdn.net/The_Time_Runner/article/details/97392656)
+  > 尝试翻译官方文档，水平有限，如有错误万望指正
+
+  Stable baselines为图像（*CNNPolicies*）和其他类型的输入特征（*MlpPolicies*）提供了默认策略网络（见 [Policies](https://stable-baselines.readthedocs.io/en/master/modules/policies.html#policies)）。
+
+  自定义策略网络结构的一种方法是创建模型的时候用`policy_kwargs`给模型传递参数：
+
+  ```python
+  import gym
+  import tensorflow as tf
+  
+  from stable_baselines import PPO2
+  
+  # Custom MLP policy of two layers of size 32 each with tanh activation function
+  policy_kwargs = dict(act_fun=tf.nn.tanh, net_arch=[32, 32])
+  # Create the agent
+  model = PPO2("MlpPolicy", "CartPole-v1", policy_kwargs=policy_kwargs, verbose=1)
+  # Retrieve the environment
+  env = model.get_env()
+  # Train the agent
+  model.learn(total_timesteps=100000)
+  # Save the agent
+  model.save("ppo2-cartpole")
+  
+  del model
+  # the policy_kwargs are automatically loaded
+  model = PPO2.load("ppo2-cartpole")
+  ```
+
+  你也可以轻松为策略(或值)网络定义一个自定义结构：
+
+  > 定义一个自定义策略类等价于传递`policy_kwargs`。然而，它让你为策略命名，使代码简洁。在超参数搜索时应使用`policy_kwargs`
+
+  ```python
+  import gym
+  
+  from stable_baselines.common.policies import FeedForwardPolicy, register_policy
+  from stable_baselines.common.vec_env import DummyVecEnv
+  from stable_baselines import A2C
+  
+  # Custom MLP policy of three layers of size 128 each
+  class CustomPolicy(FeedForwardPolicy):
+      def __init__(self, *args, **kwargs):
+          super(CustomPolicy, self).__init__(*args, **kwargs,
+                                             net_arch=[dict(pi=[128, 128, 128],
+                                                            vf=[128, 128, 128])],
+                                             feature_extraction="mlp")
+  
+  # Create and wrap the environment
+  env = gym.make('LunarLander-v2')
+  env = DummyVecEnv([lambda: env])
+  
+  model = A2C(CustomPolicy, env, verbose=1)
+  # Train the agent
+  model.learn(total_timesteps=100000)
+  # Save the agent
+  model.save("a2c-lunar")
+  
+  del model
+  # When loading a model with a custom policy
+  # you MUST pass explicitly the policy when loading the saved model
+  model = A2C.load("a2c-lunar", policy=CustomPolicy)
+  ```
+
+  > 警告：
+  >
+  > 当载入一个具有自定义策略的模型，你必须在载入模型时显式的传递自定义策略。（cf之前的例子）
+
+  你也可以注册你的策略，以简化代码：你可以用一个字符串调用自定义策略：
+
+  ```python
+  import gym
+  
+  from stable_baselines.common.policies import FeedForwardPolicy, register_policy
+  from stable_baselines.common.vec_env import DummyVecEnv
+  from stable_baselines import A2C
+  
+  # Custom MLP policy of three layers of size 128 each
+  class CustomPolicy(FeedForwardPolicy):
+      def __init__(self, *args, **kwargs):
+          super(CustomPolicy, self).__init__(*args, **kwargs,
+                                             net_arch=[dict(pi=[128, 128, 128],
+                                                            vf=[128, 128, 128])],
+                                             feature_extraction="mlp")
+  
+  # Register the policy, it will check that the name is not already taken
+  register_policy('CustomPolicy', CustomPolicy)
+  
+  # Because the policy is now registered, you can pass
+  # a string to the agent constructor instead of passing a class
+  model = A2C(policy='CustomPolicy', env='LunarLander-v2', verbose=1).learn(total_timesteps=100000)
+  ```
+
+  *2.3.0*版本后弃用：用`net_arch`替换`layers`参数来定义网络结构。它允许有更大的控制权。
+
+  FeedForwardPolicy的net_arch参数允许指定隐层的大小及数量、以及他们中有多少比重时策略网络和值网络共享的。假设时下述结构的一个list：
+
+  1. 一系列随机整数（0也可以），每个指定共享层的单元数。如果整数的个数是0，就是说没有共享层。
+  2. 一个可选字典，指定下述策略网络和值网络的非共享层。格式化为`dict(vf=[<value layer sizes>], pi=[<policy layer sizes>])`。如果缺失任何关键字（pi或vf），嘉定没有非共享层（空list）。
+
+  简而言之：
+
+  ```python
+  [<shared layers>, dict(vf=[<non-shared value network layers>], pi=[<non-shared policy network layers>])]
+  ```
+
+- ## 案例
+
+  2个128型共享层：`net_arch=[128, 128]`
+
+  ```python
+            obs
+             |
+           <128>
+             |
+           <128>
+     /               \
+  action            value
+  ```
+
+  值网络比策略网络更深，第一共享层：`net_arch=[128, dict(vf=[256, 256])]`
+
+  ```python
+            obs
+             |
+           <128>
+     /               \
+  action             <256>
+                       |
+                     <256>
+                       |
+                     value
+  ```
+
+  最初是共享的，后来出现分歧：`[128, dict(vf=[256], pi=[16])]`
+
+  ```python
+            obs
+             |
+           <128>
+     /               \
+   <16>             <256>
+     |                |
+  action            value
+  ```
+
+  `LstmPolicy`可以类似方式构建迭代网络：
+
+  ```python
+  class CustomLSTMPolicy(LstmPolicy):
+      def __init__(self, sess, ob_space, ac_space, n_env, n_steps, n_batch, n_lstm=64, reuse=False, **_kwargs):
+          super().__init__(sess, ob_space, ac_space, n_env, n_steps, n_batch, n_lstm, reuse,
+                           net_arch=[8, 'lstm', dict(vf=[5, 10], pi=[10])],
+                           layer_norm=True, feature_extraction="mlp", **_kwargs)
+  ```
+
+  在共享网络部分，`net_auch`参数接受一个附加（强制）'`lstm`'项。策略网络和值网络共享*LSTM*。
+
+  如果你的任务要求对策略架构要求更细粒度控制，你可以直接重定义策略：
+
+  ```python
+  import gym
+  import tensorflow as tf
+  
+  from stable_baselines.common.policies import ActorCriticPolicy, register_policy, nature_cnn
+  from stable_baselines.common.vec_env import DummyVecEnv
+  from stable_baselines import A2C
+  
+  # Custom MLP policy of three layers of size 128 each for the actor and 2 layers of 32 for the critic,
+  # with a nature_cnn feature extractor
+  class CustomPolicy(ActorCriticPolicy):
+      def __init__(self, sess, ob_space, ac_space, n_env, n_steps, n_batch, reuse=False, **kwargs):
+          super(CustomPolicy, self).__init__(sess, ob_space, ac_space, n_env, n_steps, n_batch, reuse=reuse, scale=True)
+  
+          with tf.variable_scope("model", reuse=reuse):
+              activ = tf.nn.relu
+  
+              extracted_features = nature_cnn(self.processed_obs, **kwargs)
+              extracted_features = tf.layers.flatten(extracted_features)
+  
+              pi_h = extracted_features
+              for i, layer_size in enumerate([128, 128, 128]):
+                  pi_h = activ(tf.layers.dense(pi_h, layer_size, name='pi_fc' + str(i)))
+              pi_latent = pi_h
+  
+              vf_h = extracted_features
+              for i, layer_size in enumerate([32, 32]):
+                  vf_h = activ(tf.layers.dense(vf_h, layer_size, name='vf_fc' + str(i)))
+              value_fn = tf.layers.dense(vf_h, 1, name='vf')
+              vf_latent = vf_h
+  
+              self._proba_distribution, self._policy, self.q_value = \
+                  self.pdtype.proba_distribution_from_latent(pi_latent, vf_latent, init_scale=0.01)
+  
+          self._value_fn = value_fn
+          self._setup_init()
+  
+      def step(self, obs, state=None, mask=None, deterministic=False):
+          if deterministic:
+              action, value, neglogp = self.sess.run([self.deterministic_action, self.value_flat, self.neglogp],
+                                                     {self.obs_ph: obs})
+          else:
+              action, value, neglogp = self.sess.run([self.action, self.value_flat, self.neglogp],
+                                                     {self.obs_ph: obs})
+          return action, value, self.initial_state, neglogp
+  
+      def proba_step(self, obs, state=None, mask=None):
+          return self.sess.run(self.policy_proba, {self.obs_ph: obs})
+  
+      def value(self, obs, state=None, mask=None):
+          return self.sess.run(self.value_flat, {self.obs_ph: obs})
+  
+  
+  # Create and wrap the environment
+  env = DummyVecEnv([lambda: gym.make('Breakout-v0')])
+  
+  model = A2C(CustomPolicy, env, verbose=1)
+  # Train the agent
+  model.learn(total_timesteps=100000)
+  ```
+
+  
