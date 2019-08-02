@@ -4,7 +4,7 @@
   >
   > 网上没找到关于Stable Baselines使用方法的中文介绍，故翻译部分[官方文档](https://stable-baselines.readthedocs.io/en/master/index.html)。非专业出身，如有错误，请指正。
   >
-  > 官方文档中文版汇总：Github：<https://github.com/DBWangML/stable-baselines-zh>    
+  > 官方文档中文版汇总：[Github](https://github.com/DBWangML/stable-baselines-zh)   [CSDN](https://blog.csdn.net/The_Time_Runner/article/details/97392656)   
 - ## 注释
   > @@@后的内容是自己加的注释
   
@@ -69,7 +69,7 @@
     - [SubprocVecEnv](https://stable-baselines.readthedocs.io/en/master/guide/vec_envs.html#subprocvecenv) 
     - [Wrappers](https://stable-baselines.readthedocs.io/en/master/guide/vec_envs.html#wrappers) 
 
-  - ### 使用自定义环境
+  - ### [使用自定义环境](https://github.com/DBWangML/stable-baselines-zh/blob/master/用户向导/使用自定义环境.md)
 
   - ### 自定义策略网络
 
