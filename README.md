@@ -71,7 +71,7 @@
 
   - ### [使用自定义环境](https://github.com/DBWangML/stable-baselines-zh/blob/master/用户向导/使用自定义环境.md)
 
-  - ### 自定义策略网络
+  - ### [自定义策略网络](https://github.com/DBWangML/stable-baselines-zh/blob/master/用户向导/自定义策略网络.md)
 
     - 案例
 
