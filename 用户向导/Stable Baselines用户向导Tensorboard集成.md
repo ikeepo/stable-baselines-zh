@@ -43,11 +43,11 @@
 
   它可展示诸多信息：模型图表、事件奖励、模型损失、观察、其他一些模型的特有参数。
 
-  ![](D:\Wangdb\Typora\Typora图片\1.png)
+  ![](https://github.com/DBWangML/stable-baselines-zh/blob/master/用户向导/图片/1.png)
 
-  ![](D:\Wangdb\Typora\Typora图片\2.png)
+  ![](https://github.com/DBWangML/stable-baselines-zh/blob/master/用户向导/图片/2.png)
 
-  ![](D:\Wangdb\Typora\Typora图片\3.png)
+  ![](https://github.com/DBWangML/stable-baselines-zh/blob/master/%E7%94%A8%E6%88%B7%E5%90%91%E5%AF%BC/%E5%9B%BE%E7%89%87/3.png)
 
 - ## 日志更新
 
