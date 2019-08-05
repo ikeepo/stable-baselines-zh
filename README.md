@@ -75,7 +75,7 @@
 
     - 案例
 
-  - ### Tensorborad集成
+  - ### [Tensorborad集成](https://github.com/DBWangML/stable-baselines-zh/blob/master/用户向导/Tensorboard集成.md)
 
     - 基础用法
     - 遗留集成
