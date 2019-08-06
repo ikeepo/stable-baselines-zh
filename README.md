@@ -80,7 +80,7 @@
     - 基础用法
     - 遗留集成
 
-  - ### [RL Baselines Zoo](https://stable-baselines.readthedocs.io/en/master/guide/rl_zoo.html) 
+  - ### [RL Baselines Zoo](https://github.com/DBWangML/stable-baselines-zh/blob/master/用户向导/RL%20Baselines%20Zoo.md) 
 
     - 安装
     - 训练智体
