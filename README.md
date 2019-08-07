@@ -88,7 +88,7 @@
     - 超参数优化
     - Colab Notebook:在线尝试！
 
-  - ### 预训练（克隆行为）
+  - ### [预训练（克隆行为）](https://github.com/DBWangML/stable-baselines-zh/blob/master/用户向导/预训练(行为克隆).md)
 
     - 轨迹生成专家
     - 用克隆行为预训练模型
