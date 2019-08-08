@@ -94,7 +94,7 @@
     - 用克隆行为预训练模型
     - 专家数据集的数据结构 
 
-  - ### 处理NaN和inf 
+  - ### [处理NaN和inf](https://github.com/DBWangML/stable-baselines-zh/blob/master/用户向导/处理NaNs和infs.md) 
 
     - 如何以及为何
     - Numpy参数
