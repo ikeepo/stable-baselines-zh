@@ -103,7 +103,7 @@
     - 深度学习模型超参数
     - 数据集中的缺失值
 
-  - ### 深度学习算法
+  - ### 强化学习算法
 
     - [Base RL Class](https://stable-baselines.readthedocs.io/en/master/modules/base.html)
     - [Policy Networks](https://stable-baselines.readthedocs.io/en/master/modules/policies.html)
