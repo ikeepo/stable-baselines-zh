@@ -103,34 +103,34 @@
     - 深度学习模型超参数
     - 数据集中的缺失值
 
-  - ### 强化学习算法
+- ## 强化学习算法
 
-    - [Base RL Class](https://stable-baselines.readthedocs.io/en/master/modules/base.html)
-    - [Policy Networks](https://stable-baselines.readthedocs.io/en/master/modules/policies.html)
-    - [A2C](https://stable-baselines.readthedocs.io/en/master/modules/a2c.html)
-    - [ACER](https://stable-baselines.readthedocs.io/en/master/modules/acer.html)
-    - [ACKTR](https://stable-baselines.readthedocs.io/en/master/modules/acktr.html)
-    - [DDPG](https://stable-baselines.readthedocs.io/en/master/modules/ddpg.html)
-    - [DQN](https://stable-baselines.readthedocs.io/en/master/modules/dqn.html)
-    - [GAIL](https://stable-baselines.readthedocs.io/en/master/modules/gail.html)
-    - [HER](https://stable-baselines.readthedocs.io/en/master/modules/her.html)
-    - [PPO1](https://stable-baselines.readthedocs.io/en/master/modules/ppo1.html)
-    - [PPO2](https://stable-baselines.readthedocs.io/en/master/modules/ppo2.html)
-    - [SAC](https://stable-baselines.readthedocs.io/en/master/modules/sac.html)
-    - [TRPO](https://stable-baselines.readthedocs.io/en/master/modules/trpo.html) 
+  - ### [Base RL Class](https://stable-baselines.readthedocs.io/en/master/modules/base.html)
+  - ### [Policy Networks](https://stable-baselines.readthedocs.io/en/master/modules/policies.html)
+  - ### [A2C](https://stable-baselines.readthedocs.io/en/master/modules/a2c.html)
+  - ### [ACER](https://stable-baselines.readthedocs.io/en/master/modules/acer.html)
+  - ### [ACKTR](https://stable-baselines.readthedocs.io/en/master/modules/acktr.html)
+  - ### [DDPG](https://stable-baselines.readthedocs.io/en/master/modules/ddpg.html)
+  - ### [DQN](https://stable-baselines.readthedocs.io/en/master/modules/dqn.html)
+  - ### [GAIL](https://stable-baselines.readthedocs.io/en/master/modules/gail.html)
+  - ### [HER](https://stable-baselines.readthedocs.io/en/master/modules/her.html)
+  - ### [PPO1](https://stable-baselines.readthedocs.io/en/master/modules/ppo1.html)
+  - ### [PPO2](https://stable-baselines.readthedocs.io/en/master/modules/ppo2.html)
+  - ### [SAC](https://stable-baselines.readthedocs.io/en/master/modules/sac.html)
+  - ### [TRPO](https://stable-baselines.readthedocs.io/en/master/modules/trpo.html) 
 
-  - ### Common
+- ## Common
 
-    - [Probability Distributions](https://stable-baselines.readthedocs.io/en/master/common/distributions.html)
-    - [Tensorflow Utils](https://stable-baselines.readthedocs.io/en/master/common/tf_utils.html)
-    - [Command Utils](https://stable-baselines.readthedocs.io/en/master/common/cmd_utils.html)
-    - [Schedules](https://stable-baselines.readthedocs.io/en/master/common/schedules.html) 
+  - ### [Probability Distributions](https://stable-baselines.readthedocs.io/en/master/common/distributions.html)
+  - ### [Tensorflow Utils](https://stable-baselines.readthedocs.io/en/master/common/tf_utils.html)
+  - ### [Command Utils](https://stable-baselines.readthedocs.io/en/master/common/cmd_utils.html)
+  - ### [Schedules](https://stable-baselines.readthedocs.io/en/master/common/schedules.html) 
 
-  - ### Misc
+- ## Misc
 
-    - [Changelog](https://stable-baselines.readthedocs.io/en/master/misc/changelog.html) 更新日志
-    - [Projects](https://stable-baselines.readthedocs.io/en/master/misc/projects.html) 项目
-    - [Plotting Results](https://stable-baselines.readthedocs.io/en/master/misc/results_plotter.html) 绘制结果
+  - ### [Changelog](https://stable-baselines.readthedocs.io/en/master/misc/changelog.html) 更新日志
+  - ### [Projects](https://stable-baselines.readthedocs.io/en/master/misc/projects.html) 项目
+  - ### [Plotting Results](https://stable-baselines.readthedocs.io/en/master/misc/results_plotter.html) 绘制结果
 
 - ## 引用Stable Baselines 
 
