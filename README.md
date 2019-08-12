@@ -106,7 +106,7 @@
 - ## 强化学习算法
 
   - ### [Base RL Class](https://github.com/DBWangML/stable-baselines-zh/blob/master/RL算法/RL基础类.md)
-  - ### [Policy Networks](https://stable-baselines.readthedocs.io/en/master/modules/policies.html)
+  - ### [Policy Networks](https://github.com/DBWangML/stable-baselines-zh/blob/master/RL算法/Policy%20Networks.md)
   - ### [A2C](https://stable-baselines.readthedocs.io/en/master/modules/a2c.html)
   - ### [ACER](https://stable-baselines.readthedocs.io/en/master/modules/acer.html)
   - ### [ACKTR](https://stable-baselines.readthedocs.io/en/master/modules/acktr.html)
